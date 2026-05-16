@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEJU DRONE — 제주 드론 솔루션</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+:root {
+  --bg: #070b0f;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --surface: #161e28;
+  --surface2: #1d2733;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00d4ff;
+  --accent2: #0099bb;
+  --accent-glow: rgba(0,212,255,0.15);
+  --accent-dim: rgba(0,212,255,0.08);
+  --jeju: #2ecc71;
+  --jeju-dim: rgba(46,204,113,0.12);
+  --amber: #f0a500;
+  --text: #e8edf2;
+  --text2: #8899aa;
+  --text3: #556677;
+  --white: #ffffff;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4rem; height: 68px;
+  background: rgba(7,11,15,0.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border); transition: background 0.3s;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.12em;
+  color: var(--white); display: flex; align-items: center; gap: 10px; text-decoration: none;
+}
+.nav-logo .accent { color: var(--accent); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.65)} }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { font-size: .8rem; font-weight: 500; letter-spacing: .05em; color: var(--text2); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--accent); }
+.nav-cta { background: var(--accent) !important; color: var(--bg) !important; padding: 8px 20px; border-radius: 6px; font-weight: 700 !important; }
+
+/* HERO */
+#hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 8rem 4rem 4rem; position: relative; overflow: hidden;
+}
+#hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(0,212,255,.04) 1px,transparent 1px), linear-gradient(90deg,rgba(0,212,255,.04) 1px,transparent 1px);
+  background-size: 80px 80px; animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove { 0%{background-position:0 0} 100%{background-position:80px 80px} }
+.hero-label {
+  font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .18em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 10px; animation: fadeUp .8s ease both;
+}
+.hero-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem,8vw,7rem);
+  line-height: .95; letter-spacing: .02em; color: var(--white); margin-bottom: 1rem;
+  animation: fadeUp .8s .1s ease both;
+}
+.hero-title .line-accent { display: block; color: var(--accent); }
+.hero-title .line-grad {
+  display: block;
+  background: linear-gradient(90deg, var(--jeju), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  font-size: 1.05rem; font-weight: 300; line-height: 1.75; color: var(--text2);
+  max-width: 500px; margin-bottom: 2.5rem; animation: fadeUp .8s .2s ease both;
+}
+.hero-btns { display: flex; gap: 1rem; animation: fadeUp .8s .3s ease both; }
+.btn-primary {
+  padding: 14px 32px; border-radius: 8px; background: var(--accent); color: var(--bg);
+  font-weight: 700; font-size: .9rem; text-decoration: none; letter-spacing: .04em;
+  transition: box-shadow .25s, transform .2s;
+}
+.btn-primary:hover { box-shadow: 0 0 30px rgba(0,212,255,.4); transform: translateY(-2px); }
+.btn-ghost {
+  padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border2); color: var(--text);
+  font-weight: 500; font-size: .9rem; text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+.btn-ghost:hover { background: var(--surface); transform: translateY(-2px); }
+.hero-stats {
+  position: absolute; bottom: 3rem; right: 4rem; display: flex; gap: 2.5rem;
+  animation: fadeUp .8s .4s ease both;
+}
+.stat-item { text-align: right; }
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--white); line-height: 1; }
+.stat-num span { color: var(--accent); }
+.stat-label { font-size: .72rem; color: var(--text3); letter-spacing: .08em; }
+.drone-illustration {
+  position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+  width: min(480px,42vw); animation: float 6s ease-in-out infinite; z-index: 2;
+}
+@keyframes float { 0%,100%{transform:translateY(-50%) translateX(0)} 50%{transform:translateY(calc(-50% - 18px)) translateX(8px)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* SECTIONS */
+section { padding: 7rem 4rem; }
+.divider { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--border2),transparent); }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.2em; color:var(--accent); text-transform:uppercase; margin-bottom:.8rem; }
+.section-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:.03em; color:var(--white); line-height:1.1; margin-bottom:1rem; }
+.section-desc { font-size:.95rem; color:var(--text2); line-height:1.8; max-width:560px; font-weight:300; }
+
+/* APPLICATIONS */
+#applications { background: var(--bg2); }
+.app-intro { max-width:650px; margin-bottom:3rem; }
+.highlight-band {
+  background: linear-gradient(90deg,var(--accent-dim),rgba(46,204,113,.08),var(--accent-dim));
+  border:1px solid rgba(0,212,255,.15); border-radius:var(--radius);
+  padding:1.5rem 2rem; margin-bottom:3rem; display:flex; gap:2rem; flex-wrap:wrap;
+}
+.hb-item { display:flex; align-items:center; gap:.6rem; font-size:.82rem; color:var(--text2); }
+.hb-item strong { color:var(--accent); }
+.app-grid {
+  display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  gap:1.5px; background:var(--border); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;
+}
+.app-card {
+  background: var(--bg2); padding: 2rem 2rem 2.5rem;
+  transition: background .3s; position:relative; overflow:hidden; cursor:default;
+}
+.app-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0; transition:opacity .3s;
+}
+.app-card:hover { background: var(--surface); }
+.app-card:hover::before { opacity:1; }
+.app-icon { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:1.2rem; font-size:1.5rem; }
+.icon-env { background:rgba(46,204,113,.12); }
+.icon-trans { background:rgba(0,212,255,.1); }
+.icon-agri { background:rgba(240,165,0,.1); }
+.icon-tour { background:rgba(155,89,182,.12); }
+.icon-infra { background:rgba(231,76,60,.1); }
+.icon-safety { background:rgba(52,152,219,.1); }
+.app-tag { font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; display:block; }
+.app-card h3 { font-size:1.05rem; font-weight:700; color:var(--white); margin-bottom:.8rem; }
+.app-card p { font-size:.88rem; color:var(--text2); line-height:1.75; font-weight:300; }
+.app-items { margin-top:1rem; list-style:none; display:flex; flex-direction:column; gap:.45rem; }
+.app-items li { font-size:.82rem; color:var(--text2); padding-left:1rem; position:relative; }
+.app-items li::before { content:'→'; position:absolute; left:0; color:var(--accent); font-size:.75rem; }
+
+/* EQUIPMENT */
+#equipment { background: var(--bg3); }
+.eq-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-top:3rem; }
+.eq-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:1.5rem 1.25rem; transition:border-color .25s, transform .25s;
+}
+.eq-card:hover { border-color:var(--accent2); transform:translateY(-4px); }
+.eq-card-icon { font-size:1.8rem; margin-bottom:.8rem; }
+.eq-card h4 { font-size:.88rem; font-weight:700; color:var(--white); margin-bottom:.4rem; }
+.eq-card p { font-size:.78rem; color:var(--text2); line-height:1.65; }
+.eq-badge { display:inline-block; margin-top:.7rem; font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; padding:3px 8px; border-radius:4px; background:var(--accent-dim); color:var(--accent); text-transform:uppercase; }
+
+/* STATS */
+#stats { background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%); border-top:1px solid var(--border2); border-bottom:1px solid var(--border2); padding:4rem; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2rem; text-align:center; }
+.stat-big { font-family:'Bebas Neue',sans-serif; font-size:3.5rem; color:var(--white); line-height:1; }
+.stat-big .hi { color:var(--accent); }
+.stat-desc { font-size:.78rem; color:var(--text2); margin-top:.4rem; letter-spacing:.04em; }
+
+/* USE CASES */
+#usecases { background: var(--bg2); }
+.cases-wrap { margin-top:3rem; overflow-x:auto; }
+.cases-table { width:100%; border-collapse:collapse; min-width:700px; }
+.cases-table th { font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text3); padding:.8rem 1.2rem; text-align:left; border-bottom:1px solid var(--border2); }
+.cases-table td { padding:1rem 1.2rem; font-size:.85rem; color:var(--text2); border-bottom:1px solid var(--border); line-height:1.6; }
+.cases-table tr:hover td { background:var(--accent-dim); color:var(--text); }
+.cases-table td:first-child { color:var(--white); font-weight:500; }
+.tag-pill { display:inline-block; font-size:.68rem; padding:3px 10px; border-radius:20px; font-weight:500; }
+.tag-env { background:var(--jeju-dim); color:var(--jeju); }
+.tag-trans { background:var(--accent-dim); color:var(--accent); }
+.tag-agri { background:rgba(240,165,0,.1); color:var(--amber); }
+.tag-safety { background:rgba(231,76,60,.1); color:#e74c3c; }
+.tag-tour { background:rgba(155,89,182,.12); color:#a29bfe; }
+.tag-infra { background:rgba(52,152,219,.1); color:#74b9ff; }
+.impact { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--jeju); font-weight:500; }
+
+/* PROCESS */
+#process { background: var(--bg); }
+.process-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0; margin-top:3.5rem; position:relative; }
+.process-steps::before { content:''; position:absolute; top:32px; left:10%; right:10%; height:1px; background:linear-gradient(90deg,var(--accent2),var(--jeju)); }
+.process-step { text-align:center; padding:0 1rem; }
+.step-num { width:64px; height:64px; border-radius:50%; background:var(--surface); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; margin:0 auto 1.2rem; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--accent); position:relative; z-index:1; box-shadow:0 0 20px rgba(0,212,255,.2); }
+.process-step h4 { font-size:.9rem; font-weight:700; color:var(--white); margin-bottom:.5rem; }
+.process-step p { font-size:.8rem; color:var(--text2); line-height:1.6; }
+
+/* CONTACT */
+#contact { background: var(--bg2); }
+.contact-wrap { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-top:3rem; }
+.contact-info h3 { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--white); margin-bottom:1rem; }
+.contact-info p { font-size:.9rem; color:var(--text2); line-height:1.8; margin-bottom:2rem; }
+.contact-detail { display:flex; flex-direction:column; gap:.8rem; }
+.contact-row { display:flex; align-items:center; gap:.8rem; font-size:.85rem; color:var(--text2); }
+.contact-row span:first-child { width:32px; height:32px; border-radius:8px; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+.contact-form { display:flex; flex-direction:column; gap:1rem; }
+.form-group { display:flex; flex-direction:column; gap:.4rem; }
+.form-group label { font-size:.75rem; color:var(--text3); letter-spacing:.08em; text-transform:uppercase; font-family:'JetBrains Mono',monospace; }
+.form-group input, .form-group select, .form-group textarea { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:.75rem 1rem; color:var(--text); font-size:.9rem; font-family:'Noto Sans KR',sans-serif; transition:border-color .2s,box-shadow .2s; outline:none; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,212,255,.1); }
+.form-group select { appearance:none; cursor:pointer; }
+.form-group textarea { resize:vertical; min-height:100px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.btn-submit { padding:14px; border-radius:8px; background:var(--accent); color:var(--bg); font-weight:700; font-size:.9rem; border:none; cursor:pointer; transition:box-shadow .25s,transform .2s; letter-spacing:.05em; }
+.btn-submit:hover { box-shadow:0 0 30px rgba(0,212,255,.35); transform:translateY(-2px); }
+
+/* FOOTER */
+footer { background:var(--bg); border-top:1px solid var(--border); padding:2.5rem 4rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+.footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:.12em; color:var(--text3); }
+.footer-copy { font-size:.75rem; color:var(--text3); }
+.footer-links { display:flex; gap:1.5rem; }
+.footer-links a { font-size:.78rem; color:var(--text3); text-decoration:none; transition:color .2s; }
+.footer-links a:hover { color:var(--accent); }
+
+/* RESPONSIVE */
+@media (max-width:900px) {
+  nav { padding:0 1.5rem; }
+  section { padding:5rem 1.5rem; }
+  #hero { padding:8rem 1.5rem 4rem; }
+  .hero-stats, .drone-illustration { display:none; }
+  .contact-wrap { grid-template-columns:1fr; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  footer { padding:2rem 1.5rem; flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="dot"></div>
+    JEJU<span class="accent">DRONE</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#applications">활용 분야</a></li>
+    <li><a href="#equipment">장비</a></li>
+    <li><a href="#usecases">서비스</a></li>
+    <li><a href="#process">프로세스</a></li>
+    <li><a href="#contact" class="nav-cta">문의하기</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-label">제주 특화 드론 솔루션 전문기업</div>
+  <h1 class="hero-title">
+    하늘에서<br>
+    <span class="line-accent">새롭게 보는</span>
+    <span class="line-grad">제주</span>
+  </h1>
+  <p class="hero-sub">
+    환경·농업·물류·관광·안전 전 분야에 걸쳐<br>
+    제주의 특성에 최적화된 드론 서비스를 제공합니다.<br>
+    첨단 기술로 제주의 내일을 설계합니다.
+  </p>
+  <div class="hero-btns">
+    <a href="#applications" class="btn-primary">서비스 알아보기</a>
+    <a href="#contact" class="btn-ghost">무료 상담 신청</a>
+  </div>
+
+  <!-- Drone SVG Illustration -->
+  <svg class="drone-illustration" viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="240" cy="285" rx="120" ry="16" fill="rgba(0,212,255,0.05)"/>
+    <rect x="190" y="138" width="100" height="40" rx="10" fill="#161e28" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/>
+    <rect x="205" y="147" width="70" height="22" rx="6" fill="#1d2733"/>
+    <circle cx="240" cy="158" r="12" fill="#0d1117" stroke="rgba(0,212,255,0.8)" stroke-width="1.5"/>
+    <circle cx="240" cy="158" r="5" fill="rgba(0,212,255,0.4)"/>
+    <line x1="190" y1="154" x2="118" y2="118" stroke="rgba(0,212,255,0.35)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="290" y1="154" x2="362" y2="118" stroke="rgba(0,212,255,0.35)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="190" y1="164" x2="118" y2="200" stroke="rgba(0,212,255,0.35)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="290" y1="164" x2="362" y2="200" stroke="rgba(0,212,255,0.35)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="118" cy="118" r="18" fill="#161e28" stroke="rgba(0,212,255,0.6)" stroke-width="1.5"/>
+    <circle cx="362" cy="118" r="18" fill="#161e28" stroke="rgba(0,212,255,0.6)" stroke-width="1.5"/>
+    <circle cx="118" cy="200" r="18" fill="#161e28" stroke="rgba(0,212,255,0.6)" stroke-width="1.5"/>
+    <circle cx="362" cy="200" r="18" fill="#161e28" stroke="rgba(0,212,255,0.6)" stroke-width="1.5"/>
+    <ellipse cx="118" cy="118" rx="42" ry="5" fill="rgba(0,212,255,0.1)" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+    <ellipse cx="362" cy="118" rx="42" ry="5" fill="rgba(0,212,255,0.1)" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+    <ellipse cx="118" cy="200" rx="42" ry="5" fill="rgba(0,212,255,0.1)" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+    <ellipse cx="362" cy="200" rx="42" ry="5" fill="rgba(0,212,255,0.1)" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+    <rect x="228" y="176" width="24" height="20" rx="4" fill="#0d1117" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+    <circle cx="240" cy="186" r="6" fill="rgba(0,212,255,0.15)" stroke="rgba(0,212,255,0.6)" stroke-width="1"/>
+    <line x1="215" y1="196" x2="210" y2="222" stroke="rgba(0,212,255,0.22)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="265" y1="196" x2="270" y2="222" stroke="rgba(0,212,255,0.22)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="200" y1="222" x2="228" y2="222" stroke="rgba(0,212,255,0.28)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="252" y1="222" x2="280" y2="222" stroke="rgba(0,212,255,0.28)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="118" cy="118" r="4" fill="#00d4ff">
+      <animate attributeName="opacity" values="1;.15;1" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="362" cy="200" r="4" fill="#ff3333">
+      <animate attributeName="opacity" values="1;.15;1" dur="1.5s" begin=".75s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="240" cy="95" r="1" stroke="rgba(0,212,255,0.4)" stroke-width="1" fill="none">
+      <animate attributeName="r" values="8;38" dur="2.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".7;0" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="240" cy="95" r="1" stroke="rgba(0,212,255,0.25)" stroke-width="1" fill="none">
+      <animate attributeName="r" values="8;38" dur="2.2s" begin=".9s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".5;0" dur="2.2s" begin=".9s" repeatCount="indefinite"/>
+    </circle>
+    <rect x="18" y="48" width="88" height="52" rx="5" fill="rgba(13,17,23,0.75)" stroke="rgba(0,212,255,0.18)" stroke-width=".5"/>
+    <text x="27" y="67" font-family="monospace" font-size="7.5" fill="rgba(0,212,255,0.45)">STATUS</text>
+    <text x="27" y="82" font-family="monospace" font-size="8.5" fill="rgba(46,204,113,0.85)">● ACTIVE</text>
+    <text x="27" y="95" font-family="monospace" font-size="7.5" fill="rgba(0,212,255,0.5)">BAT  94%</text>
+    <rect x="374" y="48" width="88" height="52" rx="5" fill="rgba(13,17,23,0.75)" stroke="rgba(0,212,255,0.18)" stroke-width=".5"/>
+    <text x="383" y="67" font-family="monospace" font-size="7.5" fill="rgba(0,212,255,0.45)">POSITION</text>
+    <text x="383" y="82" font-family="monospace" font-size="7.5" fill="rgba(0,212,255,0.7)">33.4°N</text>
+    <text x="383" y="95" font-family="monospace" font-size="7.5" fill="rgba(0,212,255,0.7)">126.5°E</text>
+    <line x1="160" y1="55" x2="160" y2="240" stroke="rgba(0,212,255,0.1)" stroke-width="1" stroke-dasharray="4,6"/>
+    <text x="148" y="53" font-family="monospace" font-size="8" fill="rgba(0,212,255,0.4)">ALT</text>
+    <text x="140" y="65" font-family="monospace" font-size="8" fill="rgba(0,212,255,0.65)">120m</text>
+    <circle cx="315" cy="78" r="2.5" fill="rgba(46,204,113,.7)"/>
+    <circle cx="335" cy="63" r="2" fill="rgba(46,204,113,.5)"/>
+    <circle cx="355" cy="52" r="1.5" fill="rgba(46,204,113,.3)"/>
+  </svg>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">8<span>개</span></div>
+      <div class="stat-label">적용 산업 분야</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">365<span>일</span></div>
+      <div class="stat-label">연중무휴 운영</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">±<span>2</span>cm</div>
+      <div class="stat-label">RTK 측위 정밀도</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- APPLICATIONS -->
+<section id="applications">
+  <div class="app-intro">
+    <div class="section-label">// JEJU APPLICATIONS</div>
+    <h2 class="section-title">제주 특화<br>드론 활용 분야</h2>
+    <p class="section-desc">제주도의 지리적 특성, 1차 산업, 관광 자원, 도서 환경을 깊이 이해한 전문 솔루션입니다.</p>
+  </div>
+
+  <div class="highlight-band">
+    <div class="hb-item">🌊 <strong>도서 격리 환경</strong> — 마라도·우도·가파도 응급 배송</div>
+    <div class="hb-item">🍊 <strong>감귤 농업</strong> — 제주 경작지 40% 과수원 정밀 방제</div>
+    <div class="hb-item">🌋 <strong>세계자연유산</strong> — 한라산·용암동굴 디지털 보존</div>
+    <div class="hb-item">🤿 <strong>해녀 문화</strong> — AI 기반 안전 모니터링 시스템</div>
+  </div>
+
+  <div class="app-grid">
+    <div class="app-card">
+      <div class="app-icon icon-env">🌿</div>
+      <span class="app-tag">01 / ENVIRONMENT</span>
+      <h3>환경·생태 모니터링</h3>
+      <p>한라산 생태계부터 해양 오염까지, 제주의 자연환경을 실시간으로 감시하고 보호합니다.</p>
+      <ul class="app-items">
+        <li>곶자왈 외래종 침입 탐지 및 분포 지도</li>
+        <li>해안 쓰레기 분포 현황 항공 조사</li>
+        <li>적조·해양 오염 멀티스펙트럼 탐지</li>
+        <li>한라산 야생동물 개체수 항공 조사</li>
+        <li>축산 밀집구역 악취·암모니아 농도 측정</li>
+      </ul>
+    </div>
+    <div class="app-card">
+      <div class="app-icon icon-trans">🚁</div>
+      <span class="app-tag">02 / LOGISTICS</span>
+      <h3>교통·물류 혁신</h3>
+      <p>도서 지역 응급 배송과 관광지 교통 혼잡 해소로 제주의 이동 환경을 개선합니다.</p>
+      <ul class="app-items">
+        <li>마라도·우도·가파도 응급 의약품 배송</li>
+        <li>성수기 관광지 교통 실시간 모니터링</li>
+        <li>제주항·서귀포항 물류 현황 항공 분석</li>
+        <li>올레길 탐방객 위치 파악 및 응급 지원</li>
+        <li>제주공항 주변 안티드론 방어 시스템</li>
+      </ul>
+    </div>
+    <div class="app-card">
+      <div class="app-icon icon-agri">🍊</div>
+      <span class="app-tag">03 / AGRICULTURE</span>
+      <h3>농업·1차 산업</h3>
+      <p>감귤 과수원부터 해녀 안전까지, 제주 1차 산업 전반에 스마트 드론 기술을 접목합니다.</p>
+      <ul class="app-items">
+        <li>감귤 과수원 병충해 조기 탐지 및 방제</li>
+        <li>대정·한림 월동채소 드론 항공 방제</li>
+        <li>해녀 물질 구역 안전 실시간 모니터링</li>
+        <li>전복·광어 양식장 수온·폐사 탐지</li>
+        <li>멀티스펙트럼 NDVI 작황 정밀 분석</li>
+      </ul>
+    </div>
+    <div class="app-card">
+      <div class="app-icon icon-tour">🌺</div>
+      <span class="app-tag">04 / TOURISM</span>
+      <h3>관광·문화 콘텐츠</h3>
+      <p>세계자연유산 디지털 보존과 드론 라이트쇼로 제주 관광의 새로운 차원을 엽니다.</p>
+      <ul class="app-items">
+        <li>성산일출봉·한라산 3D LiDAR 아카이빙</li>
+        <li>500대 군집 드론 야간 라이트쇼 공연</li>
+        <li>설문대할망 신화 기반 미디어아트 콘텐츠</li>
+        <li>관광지 항공 VR·4K 영상 콘텐츠 제작</li>
+        <li>해양레저 안전 구역 순찰 및 안내</li>
+      </ul>
+    </div>
+    <div class="app-card">
+      <div class="app-icon icon-infra">⚡</div>
+      <span class="app-tag">05 / INFRASTRUCTURE</span>
+      <h3>인프라 점검·측량</h3>
+      <p>신재생에너지 설비 점검부터 해안 침식 모니터링까지 제주 인프라를 스마트하게 관리합니다.</p>
+      <ul class="app-items">
+        <li>태양광 패널 열화상 불량 셀 탐지</li>
+        <li>해상 풍력 발전기 블레이드 균열 점검</li>
+        <li>해안선 침식 분기별 항공측량 비교</li>
+        <li>도로·교량 균열·포트홀 자동 탐지</li>
+        <li>RTK 정밀 3D 지형 측량 및 BIM 연계</li>
+      </ul>
+    </div>
+    <div class="app-card">
+      <div class="app-icon icon-safety">🚨</div>
+      <span class="app-tag">06 / PUBLIC SAFETY</span>
+      <h3>공공안전·재난대응</h3>
+      <p>한라산 산불, 해상 조난, 태풍 피해 현장에 드론이 가장 먼저 도달합니다.</p>
+      <ul class="app-items">
+        <li>한라산 산불 조기 감지·진화 지원</li>
+        <li>해상 조난자 야간 열화상 수색</li>
+        <li>태풍 피해 지역 신속 피해 현황 파악</li>
+        <li>해수욕장 수상 안전사고 구명환 투하</li>
+        <li>불법 입산·밀렵 행위 야간 무인 감시</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EQUIPMENT -->
+<section id="equipment">
+  <div class="section-label">// EQUIPMENT &amp; SENSORS</div>
+  <h2 class="section-title">첨단 드론 장비 라인업</h2>
+  <p class="section-desc">각 임무에 최적화된 기체와 센서를 보유하고 있습니다. 목적에 따라 최적 솔루션을 설계해 드립니다.</p>
+  <div class="eq-grid">
+    <div class="eq-card">
+      <div class="eq-card-icon">🚁</div>
+      <h4>방제 전용 드론</h4>
+      <p>20L 대용량 약제 탱크 탑재, 경사지 자동 고도 추적, 시간당 40에이커 처리 능력</p>
+      <span class="eq-badge">농업용</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">📡</div>
+      <h4>RTK GNSS 측량기</h4>
+      <p>수평 ±1cm, 수직 ±2cm 정밀도. PPK 후처리로 GCP 없이 고정밀 지도 제작 가능</p>
+      <span class="eq-badge">측량용</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">🌡️</div>
+      <h4>열화상 카메라</h4>
+      <p>FLIR 탑재 — 태양광 패널 불량 셀, 야간 수색구조, 산불 초기 감지에 특화</p>
+      <span class="eq-badge">점검·안전</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">🌈</div>
+      <h4>멀티스펙트럼 센서</h4>
+      <p>5밴드 NDVI 분석으로 작물 생육 상태, 병해충, 수분 스트레스 구역 정밀 판별</p>
+      <span class="eq-badge">정밀농업</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">⚡</div>
+      <h4>LiDAR 3D 스캐너</h4>
+      <p>초당 100만 포인트 수집. 수목 관통 지형 데이터, 문화재 3D 정밀 모델 생성</p>
+      <span class="eq-badge">측량·문화재</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">📦</div>
+      <h4>화물 배송 드론</h4>
+      <p>최대 5kg 페이로드, 편도 25km 항속, 자율 이착륙 — AED·혈액 응급 배송 특화</p>
+      <span class="eq-badge">물류</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">💡</div>
+      <h4>군집 드론 시스템</h4>
+      <p>최대 500대 동시 제어, GPS 동기화 군집비행, 야간 LED 라이트쇼 운용 플랫폼</p>
+      <span class="eq-badge">엔터테인먼트</span>
+    </div>
+    <div class="eq-card">
+      <div class="eq-card-icon">🛡️</div>
+      <h4>안티드론 시스템</h4>
+      <p>레이더+RF 탐지, 재밍·그물 포획 무력화 — 공항·행사장 불법 드론 대응</p>
+      <span class="eq-badge">보안</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<div id="stats">
+  <div class="stats-grid">
+    <div>
+      <div class="stat-big"><span class="hi">437</span>km</div>
+      <div class="stat-desc">제주 올레길 순찰 커버리지</div>
+    </div>
+    <div>
+      <div class="stat-big"><span class="hi">60</span>%↓</div>
+      <div class="stat-desc">드론 방제 농약 사용량 절감</div>
+    </div>
+    <div>
+      <div class="stat-big"><span class="hi">11</span>km</div>
+      <div class="stat-desc">마라도 응급 배송 거리</div>
+    </div>
+    <div>
+      <div class="stat-big"><span class="hi">500</span>대</div>
+      <div class="stat-desc">군집 라이트쇼 운용 규모</div>
+    </div>
+  </div>
+</div>
+
+<!-- USE CASES -->
+<section id="usecases">
+  <div class="section-label">// SERVICE MATRIX</div>
+  <h2 class="section-title">제주 드론 서비스 매트릭스</h2>
+  <p class="section-desc">분야별 적용 서비스, 핵심 기술, 기대 효과를 한눈에 확인하세요.</p>
+  <div class="cases-wrap">
+    <table class="cases-table">
+      <thead>
+        <tr>
+          <th>서비스명</th>
+          <th>분야</th>
+          <th>핵심 기술</th>
+          <th>기대 효과</th>
+          <th>적용 지역</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>감귤 과수원 스마트 방제</td><td><span class="tag-pill tag-agri">농업</span></td><td>멀티스펙트럼 + 방제 드론</td><td><span class="impact">농약 60% 절감</span></td><td>서귀포·남원·표선</td></tr>
+        <tr><td>도서 응급 의약품 배송</td><td><span class="tag-pill tag-trans">물류</span></td><td>화물 드론 + 자율항법</td><td><span class="impact">배송 시간 90% 단축</span></td><td>마라도·우도·가파도</td></tr>
+        <tr><td>해녀 안전 모니터링</td><td><span class="tag-pill tag-safety">안전</span></td><td>열화상 + AI 이상감지</td><td><span class="impact">구조 골든타임 확보</span></td><td>제주 전 해역</td></tr>
+        <tr><td>세계유산 3D 디지털 아카이빙</td><td><span class="tag-pill tag-tour">관광</span></td><td>LiDAR + 포인트클라우드</td><td><span class="impact">정밀 보존 기록 구축</span></td><td>성산일출봉·거문오름</td></tr>
+        <tr><td>풍력·태양광 설비 점검</td><td><span class="tag-pill tag-infra">인프라</span></td><td>열화상 + AI 결함 탐지</td><td><span class="impact">점검 비용 70% 절감</span></td><td>김녕·한경·대정</td></tr>
+        <tr><td>해안 침식 분기 모니터링</td><td><span class="tag-pill tag-env">환경</span></td><td>RTK 측량 + GIS 분석</td><td><span class="impact">침식 조기경보 체계</span></td><td>제주 전체 해안선</td></tr>
+        <tr><td>성수기 관광지 교통 분석</td><td><span class="tag-pill tag-trans">교통</span></td><td>영상 AI + 실시간 분석</td><td><span class="impact">체증 30% 완화</span></td><td>성산·중문·협재</td></tr>
+        <tr><td>드론 군집 라이트쇼</td><td><span class="tag-pill tag-tour">관광</span></td><td>500대 군집 GPS 동기화</td><td><span class="impact">관광 수익 신규 창출</span></td><td>성산 앞바다·중문</td></tr>
+        <tr><td>한라산 산불 감시</td><td><span class="tag-pill tag-safety">안전</span></td><td>열화상 + 자율순찰</td><td><span class="impact">초기 대응 시간 단축</span></td><td>한라산 국립공원</td></tr>
+        <tr><td>연안 양식장 수중 모니터링</td><td><span class="tag-pill tag-agri">수산</span></td><td>공중+수중 드론 연계</td><td><span class="impact">폐사율 40% 감소</span></td><td>제주 연안 양식단지</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-label">// HOW WE WORK</div>
+  <h2 class="section-title">서비스 진행 프로세스</h2>
+  <p class="section-desc" style="margin-bottom:0">상담부터 결과 보고까지, 체계적이고 투명한 5단계 프로세스로 진행됩니다.</p>
+  <div class="process-steps">
+    <div class="process-step">
+      <div class="step-num">01</div>
+      <h4>현장 상담·분석</h4>
+      <p>요구사항 청취, 현장 환경 분석, 법적 비행 가능 여부 검토</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">02</div>
+      <h4>솔루션 설계</h4>
+      <p>최적 기체·센서 선정, 비행 계획 수립, 예산·일정 제안</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">03</div>
+      <h4>인허가·준비</h4>
+      <p>국토교통부 비행 승인 대행, 보험 처리, 안전 브리핑</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">04</div>
+      <h4>현장 임무 수행</h4>
+      <p>전문 조종사 투입, 실시간 지상국 모니터링, 데이터 수집</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">05</div>
+      <h4>데이터 분석·보고</h4>
+      <p>GIS 지도·3D 모델·AI 리포트 등 분석 결과물 납품</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">// GET IN TOUCH</div>
+  <h2 class="section-title">드론 솔루션<br>무료 상담 신청</h2>
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <h3>제주의 하늘을<br>함께 열어보세요</h3>
+      <p>농업, 환경, 물류, 안전 등 어떤 분야든 제주 특성에 최적화된 드론 솔루션을 제안해 드립니다. 부담 없이 문의해 주세요.</p>
+      <div class="contact-detail">
+        <div class="contact-row">
+          <span>📍</span>
+          <span>제주특별자치도 제주시 첨단로 123, 제주혁신성장센터</span>
+        </div>
+        <div class="contact-row">
+          <span>📞</span>
+          <span>064-000-0000</span>
+        </div>
+        <div class="contact-row">
+          <span>✉️</span>
+          <span>contact@jejudrone.kr</span>
+        </div>
+        <div class="contact-row">
+          <span>🕐</span>
+          <span>평일 09:00 – 18:00 (긴급 출동 365일)</span>
+        </div>
+      </div>
+      <div style="margin-top:2rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--text3); letter-spacing:.1em; margin-bottom:1rem;">// JEJU OPERATION COVERAGE</div>
+        <svg viewBox="0 0 300 175" style="width:100%; border-radius:8px;">
+          <ellipse cx="150" cy="90" rx="132" ry="62" fill="rgba(0,212,255,0.05)" stroke="rgba(0,212,255,0.18)" stroke-width="1.5"/>
+          <ellipse cx="150" cy="90" rx="52" ry="36" fill="rgba(46,204,113,0.07)" stroke="rgba(46,204,113,0.18)" stroke-width="1"/>
+          <circle cx="150" cy="90" r="8" fill="rgba(46,204,113,0.28)" stroke="var(--jeju)" stroke-width="1.5"/>
+          <circle cx="150" cy="90" r="3" fill="var(--jeju)"/>
+          <circle cx="222" cy="80" r="9" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.28)" stroke-width="1"/>
+          <text x="222" y="100" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(0,212,255,0.55)">우도</text>
+          <circle cx="102" cy="152" r="6" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.28)" stroke-width="1"/>
+          <text x="102" y="165" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(0,212,255,0.55)">가파도</text>
+          <circle cx="82" cy="162" r="4" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.28)" stroke-width="1"/>
+          <text x="82" y="172" text-anchor="middle" font-family="monospace" font-size="6" fill="rgba(0,212,255,0.45)">마라도</text>
+          <circle cx="88" cy="78" r="5" fill="var(--amber)" opacity=".75"/>
+          <circle cx="205" cy="100" r="5" fill="var(--accent)" opacity=".75"/>
+          <circle cx="158" cy="122" r="5" fill="var(--jeju)" opacity=".75"/>
+          <circle cx="128" cy="68" r="5" fill="var(--accent)" opacity=".75"/>
+          <circle cx="180" cy="75" r="5" fill="#a29bfe" opacity=".75"/>
+          <text x="150" y="28" text-anchor="middle" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,0.25)">JEJU ISLAND — FULL COVERAGE</text>
+        </svg>
+        <div style="display:flex; gap:1.2rem; margin-top:.8rem; flex-wrap:wrap;">
+          <span style="font-size:.7rem; color:var(--text3); display:flex; align-items:center; gap:.4rem;"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block;"></span>농업</span>
+          <span style="font-size:.7rem; color:var(--text3); display:flex; align-items:center; gap:.4rem;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>물류·교통</span>
+          <span style="font-size:.7rem; color:var(--text3); display:flex; align-items:center; gap:.4rem;"><span style="width:8px;height:8px;border-radius:50%;background:var(--jeju);display:inline-block;"></span>안전·환경</span>
+          <span style="font-size:.7rem; color:var(--text3); display:flex; align-items:center; gap:.4rem;"><span style="width:8px;height:8px;border-radius:50%;background:#a29bfe;display:inline-block;"></span>관광</span>
+        </div>
+      </div>
+    </div>
+
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" placeholder="홍길동" required>
+        </div>
+        <div class="form-group">
+          <label>연락처</label>
+          <input type="tel" placeholder="010-0000-0000" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>이메일</label>
+        <input type="email" placeholder="example@company.com">
+      </div>
+      <div class="form-group">
+        <label>소속 / 기관</label>
+        <input type="text" placeholder="회사명 또는 기관명">
+      </div>
+      <div class="form-group">
+        <label>관심 서비스 분야</label>
+        <select>
+          <option value="" disabled selected>분야를 선택하세요</option>
+          <option>환경·생태 모니터링</option>
+          <option>농업 방제 및 정밀농업</option>
+          <option>도서 지역 물류 배송</option>
+          <option>인프라 점검 (태양광·풍력·교량)</option>
+          <option>측량·3D 모델링</option>
+          <option>공공안전·재난대응</option>
+          <option>관광 콘텐츠·드론 라이트쇼</option>
+          <option>기타 (직접 기재)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>문의 내용</label>
+        <textarea placeholder="구체적인 요구사항, 현장 위치, 일정 등을 자유롭게 적어주세요."></textarea>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">상담 신청하기 →</button>
+      <p style="font-size:.75rem; color:var(--text3); text-align:center; margin-top:.5rem;">영업일 기준 24시간 이내 연락드립니다</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">JEJU DRONE</div>
+  <div class="footer-links">
+    <a href="#applications">활용 분야</a>
+    <a href="#equipment">장비</a>
+    <a href="#usecases">서비스</a>
+    <a href="#process">프로세스</a>
+    <a href="#contact">문의</a>
+  </div>
+  <div class="footer-copy">© 2025 JEJU DRONE. All rights reserved. | 항공안전법 준수 · 국토교통부 등록 사업체</div>
+</footer>
+
+<script>
+// Nav scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.style.background = window.scrollY > 60
+    ? 'rgba(7,11,15,0.98)'
+    : 'rgba(7,11,15,0.88)';
+});
+
+// Active nav link highlight
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--accent)' : '';
+  });
+});
+
+// Intersection Observer for scroll-reveal
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.app-card, .eq-card, .process-step, .cases-table tr').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(22px)';
+  el.style.transition = `opacity 0.5s ${i * 0.04}s ease, transform 0.5s ${i * 0.04}s ease`;
+  io.observe(el);
+});
+
+// Animated counters
+const statBigs = document.querySelectorAll('.stat-big');
+let countersRun = false;
+const statsSection = document.getElementById('stats');
+const statsIo = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !countersRun) {
+    countersRun = true;
+    statBigs.forEach(el => {
+      const inner = el.innerHTML;
+      const numMatch = inner.replace(/<[^>]+>/g,'').match(/[\d.]+/);
+      if (!numMatch) return;
+      const target = parseFloat(numMatch[0]);
+      let curr = 0;
+      const steps = 50;
+      const inc = target / steps;
+      const timer = setInterval(() => {
+        curr = Math.min(curr + inc, target);
+        el.innerHTML = inner.replace(numMatch[0], Math.floor(curr));
+        if (curr >= target) clearInterval(timer);
+      }, 25);
+    });
+    statsIo.disconnect();
+  }
+}, { threshold: 0.4 });
+if (statsSection) statsIo.observe(statsSection);
+
+// Form submit
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '✓ 접수 완료! 곧 연락드리겠습니다';
+  btn.style.background = 'var(--jeju)';
+  btn.style.cursor = 'default';
+  btn.disabled = true;
+}
+</script>
+</body>
+</html>
